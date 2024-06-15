@@ -1,7 +1,7 @@
 import logging
-import requests
 from packageurl import PackageURL
 from functools import lru_cache
+from security import safe_requests
 
 @lru_cache
 def get_dependencies(purl: PackageURL) -> dict[str, list[PackageURL]]:
@@ -18,7 +18,7 @@ def get_dependencies(purl: PackageURL) -> dict[str, list[PackageURL]]:
     else:
         url = f'https://deps.dev/_/s/{purl.type}/p/{purl.name}/v/{purl.version}/dependencies'
 
-    res = requests.get(url, timeout=30)
+    res = safe_requests.get(url, timeout=30)
     res.raise_for_status()
     data = res.json()
 

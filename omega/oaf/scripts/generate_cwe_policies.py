@@ -1,14 +1,11 @@
 from io import BytesIO
 import zipfile
-import csv
-from contextlib import closing
-import requests
 import datetime
 from jinja2 import Environment, FileSystemLoader
-import subprocess
 import os
 import re
 from defusedxml.minidom import parse as parse_xml
+from security import safe_requests
 
 
 SPECIAL_TAGS_ARRAY = ["tags"]
@@ -40,7 +37,7 @@ class CodeQLProcessor:
                 f.write(template.render(data))
 
     def load_cwe_data(self, filename):
-        res = requests.get(f"https://cwe.mitre.org/data/xml/views/{filename}", timeout=30)
+        res = safe_requests.get(f"https://cwe.mitre.org/data/xml/views/{filename}", timeout=30)
         res.raise_for_status()
         memory_stream = BytesIO(res.content)
 
