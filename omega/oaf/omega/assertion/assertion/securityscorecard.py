@@ -16,6 +16,7 @@ from ..evidence import CommandEvidence, FileEvidence, Reproducibility, URLEviden
 from ..subject import BaseSubject, GitHubRepositorySubject, PackageUrlSubject
 from ..utils import find_repository, get_complex, is_command_available
 from .base import BaseAssertion
+from security import safe_command
 
 
 class SecurityScorecard(BaseAssertion):
@@ -169,7 +170,7 @@ class SecurityScorecard(BaseAssertion):
         logging.debug("Executing command: %s", cmd_safe)
 
         # Run the command
-        res = subprocess.run(cmd, check=False, capture_output=True, encoding="utf-8")  # nosec B603
+        res = safe_command.run(subprocess.run, cmd, check=False, capture_output=True, encoding="utf-8")  # nosec B603
         logging.debug("Security Scorecards completed, exit code: %d", res.returncode)
         if res.returncode != 0 and res.stderr:
             logging.warning("Error running Security Scorecards: %d: %s", res.returncode, res.stderr)
