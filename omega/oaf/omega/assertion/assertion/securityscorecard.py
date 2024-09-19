@@ -4,7 +4,6 @@ Asserts the results of an execution of the Security Scorecards tool.
 import json
 import logging
 import os
-import requests
 import subprocess  # nosec: B404
 import typing
 from urllib.parse import urlparse
@@ -16,6 +15,7 @@ from ..evidence import CommandEvidence, FileEvidence, Reproducibility, URLEviden
 from ..subject import BaseSubject, GitHubRepositorySubject, PackageUrlSubject
 from ..utils import find_repository, get_complex, is_command_available
 from .base import BaseAssertion
+from security import safe_requests
 
 
 class SecurityScorecard(BaseAssertion):
@@ -199,7 +199,7 @@ class SecurityScorecard(BaseAssertion):
             else:
                 url = f"https://deps.dev/_/s/{purl.type}/p/{purl.name}/v/{purl.version}"
 
-            res = requests.get(url, timeout=30)
+            res = safe_requests.get(url, timeout=30)
             if not res.ok:
                 return False
 

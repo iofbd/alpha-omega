@@ -16,11 +16,10 @@ import subprocess
 import sys
 import tempfile
 import uuid
-
-import requests
 from dateutil.parser import parse as date_parse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from packageurl import PackageURL
+from security import safe_requests
 
 logging.basicConfig(level=logging.INFO)
 
@@ -175,9 +174,9 @@ class CreateReview:
         # Check for public advisories
         logging.info('Checking deps.dev for public vulnerabilities...')
         if self.package_url.namespace:
-            res = requests.get(f'https://deps.dev/_/s/{self.package_url.type}/p/{self.package_url.namespace}/{self.package_url.name}/v/{self.package_url.version}')
+            res = safe_requests.get(f'https://deps.dev/_/s/{self.package_url.type}/p/{self.package_url.namespace}/{self.package_url.name}/v/{self.package_url.version}')
         else:
-            res = requests.get(f'https://deps.dev/_/s/{self.package_url.type}/p/{self.package_url.name}/v/{self.package_url.version}')
+            res = safe_requests.get(f'https://deps.dev/_/s/{self.package_url.type}/p/{self.package_url.name}/v/{self.package_url.version}')
         
         if res.status_code == 200:
             deps_metadata = res.json()

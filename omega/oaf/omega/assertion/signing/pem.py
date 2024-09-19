@@ -3,7 +3,6 @@ import base64
 import json
 import logging
 import os
-import requests
 from urllib.parse import urlparse
 
 from cryptography.exceptions import InvalidSignature
@@ -16,6 +15,7 @@ from cryptography.hazmat.primitives.asymmetric.types import (
 
 from ..assertion.base import BaseAssertion
 from .base import BaseSigner
+from security import safe_requests
 
 ALLOWED_REMOTE_NETLOCS = ["github.com", "www.github.com"]
 
@@ -39,7 +39,7 @@ class KeyPairSigner(BaseSigner):
         try:
             parsed = urlparse(key_file)
             if parsed.scheme == "https" and parsed.netloc in ALLOWED_REMOTE_NETLOCS:
-                res = requests.get(parsed.geturl())
+                res = safe_requests.get(parsed.geturl())
                 if self._deserialize_keys(res.content, password):
                     logging.debug("Successfully deserialized keys.")
                     return
