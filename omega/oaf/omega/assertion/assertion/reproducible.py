@@ -12,6 +12,7 @@ from .base import BaseAssertion
 from ..evidence import CommandEvidence, Reproducibility
 from ..subject import BaseSubject, PackageUrlSubject
 from ..utils import is_command_available
+from security import safe_command
 
 class Reproducible(BaseAssertion):
     """
@@ -55,8 +56,7 @@ class Reproducible(BaseAssertion):
             cmd_safe = cmd
             logging.debug("Executing command: %s", cmd_safe)
 
-            res = subprocess.run(   # nosec: B603
-                args=cmd,
+            res = safe_command.run(subprocess.run, args=cmd,
                 env=env,
                 capture_output=True,
                 encoding="utf-8",

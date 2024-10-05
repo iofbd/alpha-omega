@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from dotenv import dotenv_values
 
 from assertion.utils import get_package_url_with_version, is_command_available
+from security import safe_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -104,8 +105,7 @@ class AnalysisRunner:
             f.write(self.docker_cmdline)
 
         logging.debug("Running command: %s", cmd)
-        with subprocess.Popen(  # nosec B603
-            cmd,
+        with safe_command.run(subprocess.Popen, cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             encoding="utf-8",
@@ -154,8 +154,7 @@ class AnalysisRunner:
         _env = os.environ.copy()
         _env.update(self.env)
 
-        res = subprocess.run(  # nosec B603
-            cmd, check=False, capture_output=True, encoding="utf-8", env=_env
+        res = safe_command.run(subprocess.run, cmd, check=False, capture_output=True, encoding="utf-8", env=_env
         )
 
         if res.returncode != 0:
