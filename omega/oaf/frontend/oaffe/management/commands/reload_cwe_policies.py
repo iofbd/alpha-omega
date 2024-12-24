@@ -1,13 +1,13 @@
 import logging
 from io import BytesIO
 import zipfile
-import requests
 import re
 from defusedxml.minidom import parse as parse_xml
 
 from django.core.management.base import BaseCommand
 from oaffe.models import PolicyEvaluationQueue, Policy
 from oaffe.utils.policy import refresh_policies
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 policy.save()
 
     def load_cwe_data(self, filename):
-        res = requests.get(f"https://cwe.mitre.org/data/xml/views/{filename}", timeout=30)
+        res = safe_requests.get(f"https://cwe.mitre.org/data/xml/views/{filename}", timeout=30)
         res.raise_for_status()
         memory_stream = BytesIO(res.content)
 
