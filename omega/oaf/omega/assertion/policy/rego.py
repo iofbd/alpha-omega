@@ -10,6 +10,7 @@ from ..signing.base import BaseSigner
 from ..utils import get_complex, is_command_available, strtobool
 from .base import BasePolicy
 from .result import ExecutionResult, ResultState
+from security import safe_command
 
 class RegoPolicy(BasePolicy):
     """A policy that uses Rego to evaluate assertions."""
@@ -87,8 +88,7 @@ class RegoPolicy(BasePolicy):
 
             cmd = cmd_template + [f"data.openssf.omega.policy.{policy_name}.applies"]
             logging.debug("Executing: [%s]", " ".join(cmd))
-            res = subprocess.run(  # nosec B603
-                cmd, check=False, capture_output=True, text=True, input=assertion_str
+            res = safe_command.run(subprocess.run, cmd, check=False, capture_output=True, text=True, input=assertion_str
             )
 
             logging.debug("Return code: %d", res.returncode)
@@ -120,8 +120,7 @@ class RegoPolicy(BasePolicy):
         with open('a', 'w') as f:
             f.write(json.dumps(eval_assertions, indent=2))
 
-        res = subprocess.run(  # nosec B603
-            cmd, check=False, text=True, capture_output=True, input=json.dumps(eval_assertions)
+        res = safe_command.run(subprocess.run, cmd, check=False, text=True, capture_output=True, input=json.dumps(eval_assertions)
         )
 
         stdout = res.stdout.strip() if res.stdout else ""

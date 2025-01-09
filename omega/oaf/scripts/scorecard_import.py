@@ -6,6 +6,7 @@ import logging
 import os
 import subprocess  # nosec B404
 import tempfile
+from security import safe_command
 
 logging.basicConfig(format="%(asctime)s %(message)s", level=logging.INFO)
 if __name__ == "__main__":
@@ -48,8 +49,7 @@ if __name__ == "__main__":
                         ]
 
                         logging.debug("Running command: %s", " ".join(cmd))
-                        res = subprocess.run(  # nosec: B603
-                            cmd,
+                        res = safe_command.run(subprocess.run, cmd,
                             capture_output=True,
                             encoding="utf-8",
                             timeout=900,

@@ -14,6 +14,7 @@ from dateutil.parser import ParserError
 from dateutil.parser import parse as _parse_date
 from packageurl import PackageURL
 from packageurl.contrib.purl2url import purl2url
+from security import safe_command
 
 
 # From https://github.com/python/cpython/blob/main/Lib/distutils/util.py
@@ -56,7 +57,7 @@ def is_command_available(args: list | str):
     try:
         if isinstance(args, str):
             args = [args]
-        subprocess.run(args, capture_output=True, timeout=10, check=False)  # nosec B603
+        safe_command.run(subprocess.run, args, capture_output=True, timeout=10, check=False)  # nosec B603
         return True
     except FileNotFoundError:
         return False
@@ -83,7 +84,7 @@ def find_repository(package_url: PackageURL | str) -> str | None:
 
     try:
         cmd = ["oss-find-source", "-S", str(package_url)]
-        res = subprocess.run(cmd, check=False, capture_output=True, encoding="utf-8")  # nosec B603
+        res = safe_command.run(subprocess.run, cmd, check=False, capture_output=True, encoding="utf-8")  # nosec B603
         if res.returncode == 0:
             repository = res.stdout.strip()
             return repository or None
