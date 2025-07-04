@@ -14,6 +14,7 @@ from dateutil.parser import ParserError
 from dateutil.parser import parse as _parse_date
 from packageurl import PackageURL
 from packageurl.contrib.purl2url import purl2url
+from security import safe_requests
 
 
 # From https://github.com/python/cpython/blob/main/Lib/distutils/util.py
@@ -114,12 +115,12 @@ def get_package_url_with_version(package_url: PackageURL | str) -> PackageURL:
         return purl
 
     if purl.namespace:
-        res = requests.get(
+        res = safe_requests.get(
             f"https://deps.dev/_/s/{purl.type}/p/{purl.namespace}/{purl.name}",
             timeout=30,
         )
     else:
-        res = requests.get(f"https://deps.dev/_/s/{purl.type}/p/{purl.name}", timeout=30)
+        res = safe_requests.get(f"https://deps.dev/_/s/{purl.type}/p/{purl.name}", timeout=30)
 
     if res.status_code == 200:
         version = res.json().get("version", {}).get("version")
