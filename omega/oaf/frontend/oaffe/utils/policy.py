@@ -7,6 +7,7 @@ import subprocess
 from oaffe.models import Assertion, Policy, Subject, PolicyEvaluationResult
 
 import logging
+from security import safe_command
 
 
 def refresh_policies(subject: Subject = None, clear_first: bool = False):
@@ -33,8 +34,7 @@ def refresh_policies(subject: Subject = None, clear_first: bool = False):
         # Run the policy execution tool (out of process)
         res = None
         try:
-            res = subprocess.run(
-                [
+            res = safe_command.run(subprocess.run, [
                     sys.executable,
                     "oaf.py",
                     "--verbose",

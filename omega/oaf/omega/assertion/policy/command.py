@@ -10,6 +10,7 @@ from ..signing.base import BaseSigner
 from ..utils import get_complex, strtobool
 from .base import BasePolicy
 from .result import ExecutionResult, ResultState
+from security import safe_command
 
 
 class CommandPolicy(BasePolicy):
@@ -91,8 +92,7 @@ class CommandPolicy(BasePolicy):
 
         logging.debug("Executing: [%s]", " ".join(cmd))
 
-        res = subprocess.run(  # nosec B603
-            cmd,
+        res = safe_command.run(subprocess.run, cmd,
             check=False,
             capture_output=True,
             text=True,
